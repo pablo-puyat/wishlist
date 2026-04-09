@@ -1,0 +1,94 @@
+name: wishlist
+services:
+  laravel:
+    build:
+      context: .
+      dockerfile: ./docker/laravel/Dockerfile
+      args:
+        - USER_ID=1000
+        - COMPOSER_ALLOW_SUPERUSER=1
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
+    command: php artisan serve --host 0.0.0.0
+    ports:
+      - "8000:8000"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      - APP_NAME
+      - APP_ENV=local
+      - APP_KEY
+      - APP_DEBUG=true
+      - APP_URL=https://localhost
+      - CLOUDFLARE_IMAGES_ACCOUNT_ID
+      - CLOUDFLARE_IMAGES_API_TOKEN
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=${POSTGRES_DB:-database}
+      - DB_USERNAME=${POSTGRES_USER:-database}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-database}
+      - REDIS_HOST=redis
+      - CACHE_STORE=redis
+      - LOG_CHANNEL=stderr
+      - QUEUE_CONNECTION=redis
+      - SESSION_DRIVER=redis
+    volumes:
+      - .:/app
+      - ./docker/laravel/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+    networks:
+      - wish-network
+    depends_on:
+      - db
+  db:
+    image: postgres:17
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-database}
+      - POSTGRES_USER=${POSTGRES_USER:-database}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-database}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./dev/postgres/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh:ro
+    networks:
+      - wish-network
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_replication_slots=10"
+      - "-c"
+      - "max_wal_senders=10"
+  redis:
+    image: redis:8-bookworm
+    volumes:
+      - redis_data:/data
+    networks:
+      - wish-network
+    restart: unless-stopped
+  vite:
+    image: node:20
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - APP_URL=http://localhost:8000
+    command: >
+      sh -c "npm install --include=dev && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    networks:
+      - wish-network
+
+networks:
+  wish-network:
+    driver: bridge
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  daemon_data:
+    driver: local

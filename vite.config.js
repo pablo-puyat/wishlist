@@ -14,5 +14,9 @@ export default defineConfig({
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
+        host: '0.0.0.0', // Listen on all network interfaces
+        hmr: {
+            host: 'localhost', // Tell the browser to connect to localhost:5173
+        },
     },
 });
