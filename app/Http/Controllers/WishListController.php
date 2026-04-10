@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddProductToWishListRequest;
+use App\Http\Requests\UpdateWishListRequest;
 use App\Http\Resources\WishListResource;
 use App\Models\WishList;
 use Illuminate\Http\Request;
@@ -37,10 +38,8 @@ class WishListController extends Controller
     /**
      * Remove a product from the specified wishlist.
      */
-    public function removeProduct(Request $request, WishList $wishList, int $productId): Response
+    public function removeProduct(UpdateWishListRequest $request, WishList $wishList, int $productId): Response
     {
-        $this->authorize('update', $wishList);
-
         $wishList->products()->detach($productId);
 
         return response()->noContent();
