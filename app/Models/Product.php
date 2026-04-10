@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -33,5 +34,15 @@ class Product extends Model
             get: fn (int $value) => $value / 100,
             set: fn (float $value) => (int) round($value * 100),
         );
+    }
+
+    /**
+     * Get the wishlists that contain this product.
+     *
+     * @return BelongsToMany<WishList, Product>
+     */
+    public function wishLists(): BelongsToMany
+    {
+        return $this->belongsToMany(WishList::class);
     }
 }

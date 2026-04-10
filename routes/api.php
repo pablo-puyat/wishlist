@@ -9,3 +9,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/products', ProductController::class)->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/wishlists', [WishListController::class, 'index']);
+    Route::post('/wishlists/{wish_list}/products', [WishListController::class, 'addProduct']);
+    Route::delete('/wishlists/{wish_list}/products/{product}', [WishListController::class, 'removeProduct']);
+});
