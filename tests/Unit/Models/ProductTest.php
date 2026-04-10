@@ -3,8 +3,11 @@
 namespace Tests\Unit\Models;
 
 use App\Http\Controllers\ProductController;
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -42,15 +45,18 @@ class ProductTest extends TestCase
     }
 
     /**
-     * Test that the product controller index returns all products.
+     * Test that the product controller (invokable) returns all products as a resource collection.
      */
-    public function test_product_controller_index_returns_all_products(): void
+    public function test_product_controller_returns_all_products(): void
     {
         Product::factory()->count(3)->create();
 
+        $request = ProductRequest::create('/api/products', 'GET');
+        
         $controller = new ProductController();
-        $response = $controller->index();
+        $response = $controller($request);
 
+        $this->assertInstanceOf(AnonymousResourceCollection::class, $response);
         $this->assertCount(3, $response);
     }
 }

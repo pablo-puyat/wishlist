@@ -6,3 +6,4 @@ Simple Laravel demo using the Svelte starter
 - cp .env.example .env
 - docker compose up
 - docker compose exec -it laravel sh -c 'php artisan migrate'
+= docker compose exec -it laravel sh -c 'php artisan test'

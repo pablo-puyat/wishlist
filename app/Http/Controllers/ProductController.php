@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Handle the incoming request.
      *
-     * @return Collection<int, Product>
+     * @param  ProductRequest  $request
+     * @return AnonymousResourceCollection
      */
-    public function index(): Collection
+    public function __invoke(ProductRequest $request): AnonymousResourceCollection
     {
-        return Product::all();
+        return ProductResource::collection(Product::all());
     }
 }
