@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,14 +23,15 @@ class Product extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Get the price in dollars, but store it in cents.
      *
-     * @return array<string, string>
+     * @return Attribute<float, int>
      */
-    protected function casts(): array
+    protected function price(): Attribute
     {
-        return [
-            'price' => 'decimal:2',
-        ];
+        return Attribute::make(
+            get: fn (int $value) => $value / 100,
+            set: fn (float $value) => (int) round($value * 100),
+        );
     }
 }

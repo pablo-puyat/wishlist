@@ -26,14 +26,19 @@ class ProductTest extends TestCase
     }
 
     /**
-     * Test that the product attributes are cast to the correct types.
+     * Test that the product price attribute converts between dollars and cents.
      */
-    public function test_product_has_correct_casts(): void
+    public function test_product_price_converts_between_dollars_and_cents(): void
     {
-        $model = new Product();
+        $product = new Product();
 
-        // Laravel 11+ uses casts() method, but we can check the resolved casts
-        $this->assertEquals('decimal:2', $model->getCasts()['price'] ?? null);
+        // Test setter (dollars to cents)
+        $product->price = 19.99;
+        $this->assertEquals(1999, $product->getAttributes()['price']);
+
+        // Test getter (cents to dollars)
+        $product->setRawAttributes(['price' => 2995]);
+        $this->assertEquals(29.95, $product->price);
     }
 
     /**
