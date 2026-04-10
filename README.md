@@ -1,77 +1,65 @@
 # wishlist
 Simple Laravel demo using the Svelte starter
 
-# running the local development server
-- requires docker to be installed
-- cp .env.example .env
-- docker compose up
-- docker compose exec -it laravel sh -c 'php artisan migrate'
-- docker compose exec -it laravel sh -c 'php artisan test'
+## running the local development server
+- requires docker compose installed
+- clone the repo using the command: ```bash git clone git@github.com:pablo-puyat/wishlist.git```
+- enter the directory then run the command: ```bash docker compose up```
 
-# testing routes with curl
+## running artisan test
+```bash docker compose exec laravel sh -c "php artisan test"```
 
-  1. Register a New User
-  This command sends a POST request to create a new user. We use --cookie-jar to save the session cookie returned by Laravel.
+## testing routes with curl
+1. Register a New User
+This command sends a POST request to create a new user. We use --cookie-jar to save the session cookie returned by Laravel.
 
-    1 curl -i -X POST http://localhost:8000/api/register \
-    2      -H "Content-Type: application/json" \
-    3      -H "Accept: application/json" \
-    4      --cookie-jar cookies.txt \
-    5      -d '{
-    6         "name": "John Doe",
-    7         "email": "john@example.com",
-    8         "password": "password",
-    9         "password_confirmation": "password"
-   10      }'
-  Expected: 201 Created status and a JSON object of the new user.
+```bash
+curl -i -X POST http://localhost:8000/api/register \
+       -H "Content-Type: application/json" \
+       -H "Accept: application/json" \
+       --cookie-jar cookies.txt \
+       -d '{
+          "name": "John Doe",
+          "email": "john@example.com",
+          "password": "password",
+          "password_confirmation": "password"
+       }'
+```
 
-  ---
+Expected: 201 Created status and a JSON object of the new user.
 
-  2. Login
-  If the user already exists, use this command to authenticate. This will update your cookies.txt with the authenticated session.
+2. Login
+If the user already exists, use this command to authenticate. This will update your cookies.txt with the authenticated session.
+  
+```bash
+curl -i -X POST http://localhost:8000/api/login \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        --cookie-jar cookies.txt \
+        -d '{
+            "email": "john@example.com",
+            "password": "password"
+        }'
+```
 
-   1 curl -i -X POST http://localhost:8000/api/login \
-   2      -H "Content-Type: application/json" \
-   3      -H "Accept: application/json" \
-   4      --cookie-jar cookies.txt \
-   5      -d '{
-   6         "email": "john@example.com",
-   7         "password": "password"
-   8      }'
-  Expected: 200 OK (or 204 No Content) and an authenticated session stored in cookies.txt.
+Expected: 200 OK (or 204 No Content) and an authenticated session stored in cookies.txt.
 
-  ---
+3. Access Protected Routes 
 
-  3. Access Protected Routes (e.g., User Profile)
-  Now that you are logged in and have a session cookie, you can access the protected routes by passing the cookies.txt back to the
-  server.
+```bash
+curl -i -X GET http://localhost:8000/api/products \
+        -H "Accept: application/json" \
+        -H "Referer: http://localhost:8000" \
+        --cookie cookies.txt
+```
 
-   1 curl -X GET http://localhost:8000/api/user \
-   2      -H "Accept: application/json" \
-   3      --cookie cookies.txt
-  Expected: 200 OK and the JSON data for the authenticated user.
+Expected: 200 OK and the JSON data for the authenticated user.
 
-   1 curl -X GET http://localhost:8000/api/products \
-   2      -H "Accept: application/json" \
-   3      --cookie cookies.txt
-  Expected: 200 OK and the JSON data for the authenticated user.
-  ---
-
-  Pro-Tip: Testing Validation Errors
-  You can verify that Fortify is correctly returning JSON validation errors by sending an invalid request (e.g., missing a password):
-
-   1 curl -i -X POST http://localhost:8000/api/login \
-   2      -H "Content-Type: application/json" \
-   3      -H "Accept: application/json" \
-   4      -d '{"email": "john@example.com"}'
-  Expected: 422 Unprocessable Content with a JSON object containing the validation errors.
-
-
-# AI Usage
+## AI Usage
 The Gemini cli tool was used to implement the code.  The conversations are included in the transcripts directory under the file names conversation1.txt and conversation2.txt. 
 
-## conversation1.txt
+### conversation1.txt
 This was my first attempt.  I setup a local development environment, and installed Laravel with a starter kit. During this attempt, it became clear that using laravel with a starter kit was the wrong approach.  The requirements were for a REST API, and I was attempting to create a REST API alongside a frontend that would call the API.  Once I realized that I only needed REST endpoints, I scrapped this attempt.  The starter kit was focused on frontend and not really intended to use a REST API.
 
-## conversation2.txt
+### conversation2.txt
 This was my second attempt.  At this point, I decided to go with the flow and rely on AI to generate the code.  This second attempt I installed Laravel without any starter kits, but added the AI tools.  My approach was generate the scaffolding using artisan commands and then have Gemini complete the classes generated by artisan.  The experience went failry smoothly.  I reviewed the code after and there were some issues with consistency.  For example authorization was not handled consistently, sometimes it was in the controller, other times in form requests.  Some tests that I would consider feature tests were in the unit tests.

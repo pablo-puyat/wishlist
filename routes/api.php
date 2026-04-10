@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-Route::post('/register', [RegisteredUserController::class, 'store']);
+Route::middleware('web')->group(function () {
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('/register', [RegisteredUserController::class, 'store']);
+});
 
 Route::get('/user', function (Request $request) {
     return $request->user();
