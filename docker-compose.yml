@@ -17,7 +17,6 @@ services:
     environment:
       - APP_NAME
       - APP_ENV=local
-      - APP_KEY
       - APP_DEBUG=true
       - APP_URL=https://localhost
       - CLOUDFLARE_IMAGES_ACCOUNT_ID
@@ -50,7 +49,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./dev/postgres/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh:ro
+      - ./docker/postgres/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh:ro
     networks:
       - wish-network
     command:
@@ -61,6 +60,7 @@ services:
       - "max_replication_slots=10"
       - "-c"
       - "max_wal_senders=10"
+    restart: unless-stopped
   redis:
     image: redis:8-bookworm
     volumes:
