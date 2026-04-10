@@ -6,6 +6,11 @@ Simple Laravel demo using the Svelte starter
 - clone the repo using the command: ```bash git clone git@github.com:pablo-puyat/wishlist.git```
 - enter the directory then run the command: ```bash docker compose up```
 
+## migration commands
+Please note that containers will run these commands when the containers start up and likely will not need to be run
+```bash docker compose exec laravel sh -c "php artisan migrate"```
+```bash docker compose exec laravel sh -c "php artisan db:seed"```
+
 ## running artisan test
 ```bash docker compose exec laravel sh -c "php artisan test"```
 
@@ -25,12 +30,9 @@ curl -i -X POST http://localhost:8000/api/register \
           "password_confirmation": "password"
        }'
 ```
-
 Expected: 201 Created status and a JSON object of the new user.
 
 2. Login
-If the user already exists, use this command to authenticate. This will update your cookies.txt with the authenticated session.
-  
 ```bash
 curl -i -X POST http://localhost:8000/api/login \
         -H "Content-Type: application/json" \
@@ -41,18 +43,17 @@ curl -i -X POST http://localhost:8000/api/login \
             "password": "password"
         }'
 ```
-
 Expected: 200 OK (or 204 No Content) and an authenticated session stored in cookies.txt.
 
 3. Access Protected Routes 
-
 ```bash
+XSRF_TOKEN=$(grep "XSRF-TOKEN" cookies.txt | awk '{print $NF}')
 curl -i -X GET http://localhost:8000/api/products \
         -H "Accept: application/json" \
         -H "Referer: http://localhost:8000" \
-        --cookie cookies.txt
+        -H "X-XSRF-TOKEN: $XSRF_TOKEN" \
+        -b cookies.txt
 ```
-
 Expected: 200 OK and the JSON data for the authenticated user.
 
 ## AI Usage
