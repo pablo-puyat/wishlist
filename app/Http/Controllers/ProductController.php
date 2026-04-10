@@ -11,9 +11,6 @@ class ProductController extends Controller
 {
     /**
      * Handle the incoming request.
-     *
-     * @param  ProductRequest  $request
-     * @return AnonymousResourceCollection
      */
     public function __invoke(ProductRequest $request): AnonymousResourceCollection
     {

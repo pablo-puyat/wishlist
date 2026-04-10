@@ -2,12 +2,8 @@
 
 namespace Tests\Unit\Models;
 
-use App\Http\Controllers\ProductController;
-use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -19,7 +15,7 @@ class ProductTest extends TestCase
      */
     public function test_product_has_correct_fillable_attributes(): void
     {
-        $model = new Product();
+        $model = new Product;
 
         $this->assertEquals([
             'name',
@@ -33,7 +29,7 @@ class ProductTest extends TestCase
      */
     public function test_product_price_converts_between_dollars_and_cents(): void
     {
-        $product = new Product();
+        $product = new Product;
 
         // Test setter (dollars to cents)
         $product->price = 19.99;
